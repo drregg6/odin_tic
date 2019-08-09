@@ -41,11 +41,18 @@ const Gameplay = (gameboard, player1, player2) => {
 
 function Gameboard() {
   // const gameboard = new Gameboard;
-  // gameboard.generateGameboard = ['', '', '', '', '', '', '', '', '']
+  // gameboard.getGameboard = ['', '', '', '', '', '', '', '', '']
 
-  this.getGameboard = function() {
-    return ['', '', '', '', '', '', '', '', ''];
-  }
+  let gameboard = ['', '', '', '', '', '', '', '', ''];
+  const getGameboard = () => gameboard;
+  const addPiece = (piece, index) => {
+    if (gameboard[index] === '') {
+      gameboard[index] = piece;
+    }
+    return gameboard;
+  } 
+
+  return { getGameboard, addPiece };
 }
 
 function Player(name='Player 1', piece='X') {
@@ -70,3 +77,7 @@ const game = new Game(player1, player2);
 console.log(player1.hello());
 console.log(game.game());
 console.log(gameboard.getGameboard());
+console.log(gameboard.addPiece('X', 2));
+console.log(gameboard.addPiece('O', 0));
+console.log(gameboard.addPiece('X', 6));
+console.log(gameboard.addPiece('O', 2));
