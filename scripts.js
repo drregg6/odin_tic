@@ -1,120 +1,20 @@
-// // Gameboard object with a gameboard array
-// // Player object
-// // Game object to control the flow of the game
-// /*
+/*
 
-// Gameboard Obj - gameboard arr
-// Player Obj - Control Player 1 and Player 2 (later - CPU)
-// Game Obj - Control the flow of the game
-
-// */
-
-// const BUTTON = document.querySelector('#play');
-// BUTTON.addEventListener('click', (event) => {
-//   Gameboard.renderGameboard(Gameboard.gameboard());
-// });
+Gameboard object with a gameboard array
+Player object
+Game object to control the flow of the game
 
 
+Gameboard Obj - gameboard arr
+Player Obj - Control Player 1 and Player 2 (later - CPU)
+Game Obj - Control the flow of the game
 
-// const Gameboard = (() => {
-//   const gameboard = () => {
-//     return [
-//       {
-//         row: 1,
-//         column: 1,
-//         piece: null
-//       },
-//       {
-//         row: 1,
-//         column: 2,
-//         piece: null
-//       },
-//       {
-//         row: 1,
-//         column: 3,
-//         piece: null
-//       },
-//       {
-//         row: 2,
-//         column: 1,
-//         piece: null
-//       },
-//       {
-//         row: 2,
-//         column: 2,
-//         piece: null
-//       },
-//       {
-//         row: 2,
-//         column: 3,
-//         piece: null
-//       },
-//       {
-//         row: 3,
-//         column: 1,
-//         piece: null
-//       },
-//       {
-//         row: 3,
-//         column: 2,
-//         piece: null
-//       },
-//       {
-//         row: 3,
-//         column: 3,
-//         piece: null
-//       }
-//     ]
-//   }
+*/
 
-//   const renderGameboard = (gameboard) => {
-//     const CONTAINER = document.querySelector('.container');
-//     const GAMEBOARD = document.createElement('div');
-//     GAMEBOARD.classList.add('gameboard');
-
-//     gameboard.forEach(space => {
-//       const GAMESPACE = document.createElement('div');
-//       GAMESPACE.classList.add('gamespace');
-
-//       // DISPLAY => which player occupies the space
-//       if (space.piece) {
-//         GAMESPACE.textContent = space.piece;
-//       }
-//       // EFFECT -> highlights space when available
-//       if (!space.piece) {
-//         GAMESPACE.addEventListener('mouseenter', event => {
-//           event.target.classList.add('highlight');
-//         });
-//         GAMESPACE.addEventListener('mouseleave', event => {
-//           event.target.classList.remove('highlight');
-//         });
-//       }
-
-//       // Add GAMESPACE to GAMEBOARD
-//       GAMEBOARD.appendChild(GAMESPACE);
-//     });
-
-//     // Add GAMEBOARD to CONTAINER
-//     CONTAINER.appendChild(GAMEBOARD);
-//   }
-
-//   return {
-//     gameboard,
-//     renderGameboard
-//   }
-// })();
-
-
-
-// const Player = () => {
-//   const piece = () => 'X';
-
-//   return {
-//     piece
-//   }
-// }
-
-
+const BUTTON = document.querySelector('#play');
+BUTTON.addEventListener('click', (event) => {
+  console.log('Play game!');
+});
 
 const Gameplay = (gameboard, player1, player2) => {
   const checkWinner = (gameboard) => {
@@ -140,31 +40,33 @@ const Gameplay = (gameboard, player1, player2) => {
 }
 
 function Gameboard() {
-  this.gameboard = (function() {
-    let count = 0;
-    let arr = [];
-    while (count < 9) {
-      arr.push('');
-      count++
-    }
-    return arr;
-  })();
+  // const gameboard = new Gameboard;
+  // gameboard.generateGameboard = ['', '', '', '', '', '', '', '', '']
+
+  this.getGameboard = function() {
+    return ['', '', '', '', '', '', '', '', ''];
+  }
 }
 
-function Player(piece='X') {
-  this.piece = piece;
+function Player(name='Player 1', piece='X') {
+  const hello = () => {
+    return `My name is ${name}`;
+  }
+
+  return { name, piece, hello };
 }
 
 function Game(player1, player2) {
   this.game = function() {
-    return `${player1.piece} wins`;
+    return `${player1.piece} wins and ${player2.piece} loses`;
   }
 }
 
 const player1 = new Player();
-const player2 = new Player('O');
+const player2 = new Player('Player 2', 'O');
 const gameboard = new Gameboard();
 
 const game = new Game(player1, player2);
+console.log(player1.hello());
 console.log(game.game());
-console.log(gameboard.gameboard);
+console.log(gameboard.getGameboard());
