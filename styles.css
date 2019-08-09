@@ -1,0 +1,36 @@
+body {
+  box-sizing: border-box;
+  font-size: 16px;
+  font-family: Verdana, Geneva, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: green;
+}
+
+.gameboard {
+  width: 400px;
+  height: 400px;
+  margin: 4rem auto;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.gamespace {
+  font-size: 3rem;
+  background: yellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gamespace:nth-child(even) {
+  background: red;
+}
+
+.highlight,
+.gamespace:hover {
+  background: skyblue;
+}
