@@ -13,32 +13,16 @@ Game Obj - Control the flow of the game
 
 const BUTTON = document.querySelector('#play');
 const GAMESPACES = document.querySelectorAll('.gamespace');
-// console.log(GAMESPACES);
-// BUTTON.addEventListener('click', (event) => {
-//   if (!gamemode) {
-//     gamemode = true;
-//     console.log(gamemode);
-//   }
-// });
-
-
-// for (let i = 0; i < GAMESPACES.length; i++) {
-//   GAMESPACES[i].addEventListener('click', function(event) {
-//     if (gamemode) {
-//       console.log(this);
-//     } else {
-//       console.log('Goodbye world...');
-//     }
-//   })
-// };
 
 function Gameplay() {
   let gamemode = false;
-  const playerX = new Player('Player 1');
-  const playerO = new Player('Player 2', 'O');
-  const gameboard = new Gameboard();
+  let playerX = new Player('Player 1');
+  let playerO = new Player('Player 2', 'O');
+  let gameboard = new Gameboard();
 
   const getGamemode = () => gamemode;
+  const getGameboard = () => gameboard.getGameboard();
+  const getGamespace = index => gameboard.getGamespace(index);
   const startGame = () => {
     if (!gamemode) {
       gamemode = true;
@@ -55,15 +39,7 @@ function Gameplay() {
     }
   }
   const checkWinner = (gameboard) => {
-    // gameboard = [{},{},{},{},{},{},{},{},{}]
-    // let count = 1;
-    /*
-  
-    gameboard.forEach(space => {
-      if (space.col === )
-    })
-
-    */
+    console.log('Eh?');
   }
 
   const setPiece = (piece, index) => {
@@ -73,6 +49,8 @@ function Gameplay() {
 
   return {
     getGamemode,
+    getGameboard,
+    getGamespace,
     setPiece,
     checkWinner,
     startGame,
@@ -86,6 +64,7 @@ function Gameboard() {
 
   let gameboard = ['', '', '', '', '', '', '', '', ''];
   const getGameboard = () => gameboard;
+  const getGamespace = index => gameboard[index];
   const addPiece = (piece, index) => {
     if (gameboard[index] === '') {
       gameboard[index] = piece;
@@ -93,7 +72,7 @@ function Gameboard() {
     return gameboard;
   } 
 
-  return { getGameboard, addPiece };
+  return { getGameboard, getGamespace, addPiece };
 }
 
 function Player(name='Player 1', piece='X') {
@@ -127,10 +106,18 @@ BUTTON.addEventListener('click', function(event) {
   game.startGame();
   console.log(game.getGamemode());
 });
+
 for (let i = 0; i < GAMESPACES.length; i++) {
   GAMESPACES[i].addEventListener('click', function(event) {
     if (game.getGamemode()) {
-      game.setPiece(player1.piece, GAMESPACES[i].dataset.position);
+      if (game.getGamespace(GAMESPACES[i].dataset.position) === '') {
+        game.setPiece(player1.piece, GAMESPACES[i].dataset.position);
+      }
+      game.getGameboard().forEach(space => {
+        if (space !== '') {
+          GAMESPACES[i].textContent = space;
+        }
+      });
     }
   });
 }
