@@ -184,6 +184,7 @@ for (let i = 0; i < GAMESPACES.length; i++) {
 // HTML elements
 const PLAY = document.querySelector('#play');
 const END = document.querySelector('#end');
+const TEST = document.querySelector('#test');
 const PLAYER1 = document.querySelector('#player1');
 const PLAYER2 = document.querySelector('#player2');
 
@@ -194,6 +195,14 @@ const playerFactory = (name='name', piece='X') => {
     piece
   }
 }
+
+const displayController = (() => {
+  const test = () => gameBoard.mode(); // I do have access to other Modules within Modules
+
+  return {
+    test
+  }
+})();
 
 const gameBoard = (() => {
   // Variables
@@ -264,3 +273,7 @@ END.addEventListener('click', function() {
   console.log(gameBoard.display());
   console.log(gameBoard.mode());
 });
+
+TEST.addEventListener('click', () => {
+  console.log(displayController.test());
+})
