@@ -6,7 +6,11 @@
   </head>
   <body>
     <h1>Tic Tac Toe</h1>
-    <button id='play'>Play</button>
+    <div class='form'>
+      <input type='text' placeholder='Who wants to be X?' id='player1' />
+      <input type='text' placeholder='Who wants to be O?' id='player2' />
+    </div>
+    <p id='msg'></p>
     <div class='container'>
       <div class='gameboard'>
         <div class='gamespace' data-position=0></div>
@@ -20,6 +24,8 @@
         <div class='gamespace' data-position=8></div>
       </div>
     </div>
+    <button id='play'>PLAY!</button>
+    <button id='end'>END!</button>
     <script src='scripts.js'></script>
   </body>
 </html>
