@@ -20,11 +20,13 @@ If the square is not available, the player will be have to select a new square
 
 */
 
-// Object Creators
+// Player Creator
 const playerFactory = (name='name', piece='X') => {
+  const getName = () => name;
+  const getPiece = () => piece;
   return {
-    name,
-    piece
+    getName,
+    getPiece
   }
 }
 
@@ -32,6 +34,9 @@ const displayController = (() => {
   const PLAY = document.querySelector('#play');
   const END = document.querySelector('#end');
   const TEST = document.querySelector('#test');
+
+  const oneInput = () => document.querySelector('#player1').value;
+  const twoInput = () => document.querySelector('#player2').value;
 
   const gameListeners = () => {
     PLAY.addEventListener('click', game.playGame);
@@ -41,7 +46,9 @@ const displayController = (() => {
 
 
   return {
-    gameListeners
+    gameListeners,
+    oneInput,
+    twoInput
   }
 })();
 
@@ -83,8 +90,20 @@ const gameBoard = (() => {
 })();
 
 const game = (() => {
-  const PLAYER1 = document.querySelector('#player1');
-  const PLAYER2 = document.querySelector('#player2');
+  // gameMode, resetGame, playGame, etc should all be in here
+  let player1;
+  let player2;
+
+  const createPlayers = () => {
+    let x_name = displayController.oneInput();
+    let o_name = displayController.twoInput();
+
+    if (x_name === '') x_name = 'Player 1';
+    if (o_name === '') o_name = 'Player 2';
+
+    player1 = playerFactory(x_name);
+    player2 = playerFactory(o_name, 'O');
+  }
 
   const playGame = () => {
     if (gameBoard.mode()) {
@@ -92,15 +111,9 @@ const game = (() => {
       return;
     }
     // Player creation
-    let x_name = PLAYER1.value;
-    let o_name = PLAYER2.value;
-    if (x_name === '') x_name = 'Player 1';
-    if (o_name === '') o_name = 'Player 2';
-  
-    const player1 = playerFactory(x_name);
-    const player2 = playerFactory(o_name, 'O');
-    console.log(`Player 1's name is ${player1.name} and their symbol is ${player1.piece}`);
-    console.log(`Player 2's name is ${player2.name} and their symbol is ${player2.piece}`);
+    createPlayers();
+    console.log(`Player 1's name is ${player1.getName()} and their symbol is ${player1.getPiece()}`);
+    console.log(`Player 2's name is ${player2.getName()} and their symbol is ${player2.getPiece()}`);
   
     // gameBoard testing
     console.log(gameBoard.mode());
