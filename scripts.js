@@ -173,14 +173,6 @@ If the square is not available, the player will be have to select a new square
 
 
 
-
-
-
-
-
-
-// HTML elements
-
 // Object Creators
 const playerFactory = (name='name', piece='X') => {
   return {
