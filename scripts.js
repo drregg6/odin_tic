@@ -34,6 +34,7 @@ const displayController = (() => {
   const PLAY = document.querySelector('#play');
   const END = document.querySelector('#end');
   const TEST = document.querySelector('#test');
+  const GAMESPACES = document.querySelectorAll('.gamespace');
 
   const oneInput = () => document.querySelector('#player1').value;
   const twoInput = () => document.querySelector('#player2').value;
@@ -42,6 +43,12 @@ const displayController = (() => {
     PLAY.addEventListener('click', game.playGame);
     END.addEventListener('click', game.endGame);
     TEST.addEventListener('click', game.testGame);
+
+    for (let i = 0; i < GAMESPACES.length; i++) {
+      GAMESPACES[i].addEventListener('click', function() {
+        gameBoard.addPiece(i, 'O');
+      });
+    }
   }
 
 
@@ -62,7 +69,7 @@ const gameBoard = (() => {
   const mode = () => gameMode;
   const activateGame = () => gameMode = true;
 
-  const addPiece = (index) => {
+  const addPiece = (index, symbol) => {
     if (gameboard[index] === '') {
       gameboard[index] = 'X';
     }
@@ -93,6 +100,7 @@ const game = (() => {
   // gameMode, resetGame, playGame, etc should all be in here
   let player1;
   let player2;
+  let turnCount = 1; // this is count up 
 
   const createPlayers = () => {
     let x_name = displayController.oneInput();
@@ -124,6 +132,21 @@ const game = (() => {
     console.log(gameBoard.mode());
   }
 
+  const turn = () => {
+    // Player selects a space
+    // IF gamespace is unavailable
+      // DISPLAY select new space
+    // ELSE
+      // addPiece to gamespace
+    // Check for winner
+    // IF winner
+      // DISPLAY congrats
+    // ELSE
+      // Oppo player's turn
+      // turnCount++
+
+  }
+
   const endGame = () => {
     if (!gameBoard.mode()) {
       console.log('Game is not running...');
@@ -148,3 +171,67 @@ const game = (() => {
 })();
 
 displayController.gameListeners();
+
+
+
+/*
+
+[
+  ['', '', ''],
+  ['', '', ''],
+  ['', '', '']
+]
+
+winning formulas
+--- indices 0, 1, 2 ---
+[
+  ['x', 'x', 'x'],
+  ['', '', ''],
+  ['', '', '']
+]
+
+--- indices 3, 4, 5 ---
+[
+  ['', '', ''],
+  ['x', 'x', 'x'],
+  ['', '', '']
+]
+
+--- indices 6, 7, 8 ---
+[
+  ['', '', ''],
+  ['', '', ''],
+  ['x', 'x', 'x']
+]
+--- indices 0, 3, 6 ---
+[
+  ['x', '', ''],
+  ['x', '', ''],
+  ['x', '', '']
+]
+--- indices 1, 4, 7 ---
+[
+  ['', 'x', ''],
+  ['', 'x', ''],
+  ['', 'x', '']
+]
+--- indices 2, 5, 8 ---
+[
+  ['', '', 'x'],
+  ['', '', 'x'],
+  ['', '', 'x']
+]
+--- indices 0, 4, 8 ---
+[
+  ['x', '', ''],
+  ['', 'x', ''],
+  ['', '', 'x']
+]
+--- indices 2, 4, 6 ---
+[
+  ['', '', 'x'],
+  ['', 'x', ''],
+  ['x', '', '']
+]
+
+*/
