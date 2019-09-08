@@ -127,9 +127,14 @@ const game = (() => {
     console.log(gameBoard.mode());
     gameBoard.activateGame();
     console.log(gameBoard.display());
-    gameBoard.addPiece(4);
+    gameBoard.addPiece(0);
+    gameBoard.addPiece(2);
+    gameBoard.addPiece(1);
     console.log(gameBoard.display());
     console.log(gameBoard.mode());
+
+    // checkForWinner testing
+    console.log(`Check for winner: ${checkForWinner('X')}`);
   }
 
   const turn = () => {
@@ -161,6 +166,42 @@ const game = (() => {
 
   const testGame = () => {
     console.log('This is a test');
+  }
+
+  // Private
+  const checkForWinner = (symbol) => {
+    let result = `Not a winner`;
+    const winningArr = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+    const currentBoard = gameBoard.display();
+    
+    winningArr.forEach(arr => {
+      let count = 0;
+      console.log(arr);
+      arr.forEach(index => {
+        currentBoard.forEach((space, i) => {
+          if (i === index) {
+            if (space === symbol) {
+              console.log(space)
+              count = count + 1;
+            }
+          }
+        });
+      });
+      if (count === 3) {
+        result = `Winner!`;
+      }
+    });
+
+    return result;
   }
 
   return {
