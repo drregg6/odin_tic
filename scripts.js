@@ -45,8 +45,12 @@ const displayController = (() => {
     TEST.addEventListener('click', game.testGame);
 
     for (let i = 0; i < GAMESPACES.length; i++) {
+      // GAMESPACES[i].addEventListener('click', function() {
+      //   gameBoard.addPiece(i, 'O');
+      // });
       GAMESPACES[i].addEventListener('click', function() {
-        gameBoard.addPiece(i, 'O');
+        console.log(GAMESPACES[i])
+        game.turn(GAMESPACES[i]);
       });
     }
   }
@@ -71,7 +75,7 @@ const gameBoard = (() => {
 
   const addPiece = (index, symbol) => {
     if (gameboard[index] === '') {
-      gameboard[index] = 'X';
+      gameboard[index] = symbol;
     }
   }
 
@@ -100,7 +104,10 @@ const game = (() => {
   // gameMode, resetGame, playGame, etc should all be in here
   let player1;
   let player2;
-  let turnCount = 1; // this is count up 
+  let currentPlayer;
+
+  let gameCount = 1; // this is count up
+  let isWinner = false;
 
   const createPlayers = () => {
     let x_name = displayController.oneInput();
@@ -111,6 +118,13 @@ const game = (() => {
 
     player1 = playerFactory(x_name);
     player2 = playerFactory(o_name, 'O');
+
+    let randomNumber = Math.round(Math.random());
+    if (randomNumber === 0) {
+      currentPlayer = player1;
+    } else {
+      currentPlayer = player2;
+    }
   }
 
   const playGame = () => {
@@ -118,26 +132,37 @@ const game = (() => {
       console.log('You\'re already playing!');
       return;
     }
-    // Player creation
-    createPlayers();
-    console.log(`Player 1's name is ${player1.getName()} and their symbol is ${player1.getPiece()}`);
-    console.log(`Player 2's name is ${player2.getName()} and their symbol is ${player2.getPiece()}`);
-  
-    // gameBoard testing
-    console.log(gameBoard.mode());
     gameBoard.activateGame();
-    console.log(gameBoard.display());
-    gameBoard.addPiece(0);
-    gameBoard.addPiece(2);
-    gameBoard.addPiece(1);
-    console.log(gameBoard.display());
-    console.log(gameBoard.mode());
+    createPlayers();
+    // // Player creation
+    // createPlayers();
+    // console.log(`Player 1's name is ${player1.getName()} and their symbol is ${player1.getPiece()}`);
+    // console.log(`Player 2's name is ${player2.getName()} and their symbol is ${player2.getPiece()}`);
+  
+    // // gameBoard testing
+    // console.log(gameBoard.mode());
+    // gameBoard.activateGame();
+    // console.log(gameBoard.display());
+    // gameBoard.addPiece(0);
+    // gameBoard.addPiece(2);
+    // gameBoard.addPiece(1);
+    // console.log(gameBoard.display());
+    // console.log(gameBoard.mode());
 
-    // checkForWinner testing
-    console.log(`Check for winner: ${checkForWinner('X')}`);
+    // // checkForWinner testing
+    // console.log(`Check for winner: ${checkForWinner('X')}`);
   }
 
-  const turn = () => {
+  const turn = (element) => {
+    if (!gameBoard.mode()) console.log('Not allowed');
+    if (gameBoard.mode()) {
+      let index = Number(element.dataset.position);
+      console.log(element.dataset.position);
+      element.innerHTML = currentPlayer.getPiece();
+      gameBoard.addPiece(index, currentPlayer.getPiece());
+      toggleCurrentPlayer();
+    };
+    gameBoard.display();
     // Player selects a space
     // IF gamespace is unavailable
       // DISPLAY select new space
@@ -157,11 +182,15 @@ const game = (() => {
       console.log('Game is not running...');
       return;
     }
-    console.log(gameBoard.mode());
-    console.log(gameBoard.display());
-    gameBoard.resetGame();
-    console.log(gameBoard.display());
-    console.log(gameBoard.mode());
+    // console.log(gameBoard.mode());
+    // console.log(gameBoard.display());
+    // gameBoard.resetGame();
+    // console.log(gameBoard.display());
+    // console.log(gameBoard.mode());
+
+    // isWinner = false;
+    // isGameMode = false;
+    gameBoard.resetGame()
   }
 
   const testGame = () => {
@@ -169,6 +198,13 @@ const game = (() => {
   }
 
   // Private
+  const toggleCurrentPlayer = () => {
+    if (currentPlayer === player1) {
+      currentPlayer = player2;
+    } else {
+      currentPlayer = player1;
+    }
+  }
   const checkForWinner = (symbol) => {
     let result = `Not a winner`;
     const winningArr = [
@@ -197,6 +233,7 @@ const game = (() => {
         });
       });
       if (count === 3) {
+        isWinner = true;
         result = `Winner!`;
       }
     });
@@ -204,8 +241,17 @@ const game = (() => {
     return result;
   }
 
+  const checkEndGame = () => {
+    if (gameCount === 9) {
+      isGameMode = false;
+    } else if (isWinner === true) {
+      isGameMode = false;
+    }
+  }
+
   return {
     playGame,
+    turn,
     endGame,
     testGame
   }
@@ -214,65 +260,22 @@ const game = (() => {
 displayController.gameListeners();
 
 
-
 /*
 
-[
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', '']
-]
+Once the playGame button is pressed
+--- isGameMode is set to true
+--- players are created
+--- a player's turn is selected at random
+--- turn begins is set to true
 
-winning formulas
---- indices 0, 1, 2 ---
-[
-  ['x', 'x', 'x'],
-  ['', '', ''],
-  ['', '', '']
-]
-
---- indices 3, 4, 5 ---
-[
-  ['', '', ''],
-  ['x', 'x', 'x'],
-  ['', '', '']
-]
-
---- indices 6, 7, 8 ---
-[
-  ['', '', ''],
-  ['', '', ''],
-  ['x', 'x', 'x']
-]
---- indices 0, 3, 6 ---
-[
-  ['x', '', ''],
-  ['x', '', ''],
-  ['x', '', '']
-]
---- indices 1, 4, 7 ---
-[
-  ['', 'x', ''],
-  ['', 'x', ''],
-  ['', 'x', '']
-]
---- indices 2, 5, 8 ---
-[
-  ['', '', 'x'],
-  ['', '', 'x'],
-  ['', '', 'x']
-]
---- indices 0, 4, 8 ---
-[
-  ['x', '', ''],
-  ['', 'x', ''],
-  ['', '', 'x']
-]
---- indices 2, 4, 6 ---
-[
-  ['', '', 'x'],
-  ['', 'x', ''],
-  ['x', '', '']
-]
+Turn begins
+--- let whosTurn = 'X' (or player.symbol)
+      turn(whosTurn)
+        at the end of the turn, check for winner
+        if no winner and gameCount !== 9
+          if (whosTurn === 'X') whosTurn = 'O' elseif (whosTurn === 'O') whosTurn = 'X'
+--- isPlayersTurn is set to true
+--- turn takes in a player
+--- GAMESPACE listener (if isPlayersTurn) {let player click the square} else {dont allow player to click square}
 
 */
