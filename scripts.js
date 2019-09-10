@@ -30,14 +30,16 @@ const playerFactory = (name='name', piece='X') => {
   }
 }
 
+
+
 const displayController = (() => {
   const PLAY = document.querySelector('#play');
   const END = document.querySelector('#end');
   const TEST = document.querySelector('#test');
   const GAMESPACES = document.querySelectorAll('.gamespace');
 
-  const oneInput = () => document.querySelector('#player1').value;
-  const twoInput = () => document.querySelector('#player2').value;
+  const oneInput = () => document.querySelector('#player1');
+  const twoInput = () => document.querySelector('#player2');
 
   const gameListeners = () => {
     PLAY.addEventListener('click', game.playGame);
@@ -63,12 +65,21 @@ const displayController = (() => {
   }
 })();
 
+
+
 const gameBoard = (() => {
   // Variables
   const gameboard = ['', '', '', '', '', '', '', '', ''];
 
   // Methods
-  const display = () => gameboard;
+  const getGameboard = () => gameboard;
+
+  const checkAvailability = (index) => {
+    if (gameboard[index] === '') {
+      return true;
+    }
+    return false;
+  }
 
   const addPiece = (index, symbol) => {
     if (gameboard[index] === '') {
@@ -81,17 +92,17 @@ const gameBoard = (() => {
       gameboard[i] = '';
     }
   }
-  const resetGame = () => {
-    resetBoard();
-  }
 
   // Return
   return {
-    display,
+    getGameboard,
+    checkAvailability,
     addPiece,
-    resetGame
+    resetBoard
   }
 })();
+
+
 
 const game = (() => {
   // Player variables
@@ -101,19 +112,24 @@ const game = (() => {
 
   // Game variables
   let gameMode = false;
-  let gameCount = 1; // this is count up
+  let gameCount = 1; // this will count up
   let isWinner = false;
+
+  // Feedback
   const MSG = document.querySelector('#msg');
 
   const createPlayers = () => {
-    let x_name = displayController.oneInput();
-    let o_name = displayController.twoInput();
+    let x_name = displayController.oneInput().value;
+    let o_name = displayController.twoInput().value;
 
     if (x_name === '') x_name = 'Player 1';
     if (o_name === '') o_name = 'Player 2';
 
     player1 = playerFactory(x_name);
     player2 = playerFactory(o_name, 'O');
+
+    displayController.oneInput().disabled = true;
+    displayController.twoInput().disabled = true;
 
     let randomNumber = Math.round(Math.random());
     if (randomNumber === 0) {
@@ -125,12 +141,14 @@ const game = (() => {
 
   const playGame = () => {
     if (gameMode) {
-      console.log('You\'re already playing!');
+      MSG.innerHTML = `You're already playing! It is currently ${currentPlayer.getName()}'s turn`;
       return;
     }
+
     // Begin game
     createPlayers();
     toggleGameMode();
+    MSG.innerHTML = `It is ${currentPlayer.getName()}'s turn!`;
   }
 
   const turn = (element) => {
@@ -138,11 +156,18 @@ const game = (() => {
     if (gameMode) {
       let index = Number(element.dataset.position);
       console.log(element.dataset.position);
+
+      if (!gameBoard.checkAvailability(index)) {
+        MSG.innerHTML = `Please select again, ${currentPlayer.getName()}...`;
+        return;
+      }
+
       element.innerHTML = currentPlayer.getPiece();
       gameBoard.addPiece(index, currentPlayer.getPiece());
       toggleCurrentPlayer();
+      MSG.innerHTML = `It is ${currentPlayer.getName()}'s turn!`;
+      // toggleCurrentPlayer();
     };
-    gameBoard.display();
     // Player selects a space
     // IF gamespace is unavailable
       // DISPLAY select new space
@@ -155,6 +180,16 @@ const game = (() => {
       // Oppo player's turn
       // turnCount++
 
+  }
+
+  const resetGame = () => {
+    gameBoard.resetBoard();
+    gameMode = false;
+    player1 = undefined;
+    player2 = undefined;
+    currentPlayer = undefined;
+
+    MSG.innerHTML = `--- Game resetting ---`;
   }
 
   const endGame = () => {
@@ -170,7 +205,7 @@ const game = (() => {
 
     // isWinner = false;
     // isGameMode = false;
-    gameBoard.resetGame()
+    gameBoard.resetBoard();
   }
 
   const testGame = () => {
@@ -206,7 +241,7 @@ const game = (() => {
       [0, 4, 8],
       [2, 4, 6]
     ];
-    const currentBoard = gameBoard.display();
+    const currentBoard = gameBoard.getGameboard();
     
     winningArr.forEach(arr => {
       let count = 0;
