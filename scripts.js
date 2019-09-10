@@ -65,13 +65,10 @@ const displayController = (() => {
 
 const gameBoard = (() => {
   // Variables
-  let gameMode = false;
   const gameboard = ['', '', '', '', '', '', '', '', ''];
 
   // Methods
   const display = () => gameboard;
-  const mode = () => gameMode;
-  const activateGame = () => gameMode = true;
 
   const addPiece = (index, symbol) => {
     if (gameboard[index] === '') {
@@ -84,16 +81,12 @@ const gameBoard = (() => {
       gameboard[i] = '';
     }
   }
-  const resetMode = () => gameMode = false;
   const resetGame = () => {
     resetBoard();
-    resetMode();
   }
 
   // Return
   return {
-    mode,
-    activateGame,
     display,
     addPiece,
     resetGame
@@ -101,13 +94,16 @@ const gameBoard = (() => {
 })();
 
 const game = (() => {
-  // gameMode, resetGame, playGame, etc should all be in here
+  // Player variables
   let player1;
   let player2;
   let currentPlayer;
 
+  // Game variables
+  let gameMode = false;
   let gameCount = 1; // this is count up
   let isWinner = false;
+  const MSG = document.querySelector('#msg');
 
   const createPlayers = () => {
     let x_name = displayController.oneInput();
@@ -128,34 +124,18 @@ const game = (() => {
   }
 
   const playGame = () => {
-    if (gameBoard.mode()) {
+    if (gameMode) {
       console.log('You\'re already playing!');
       return;
     }
-    gameBoard.activateGame();
+    // Begin game
     createPlayers();
-    // // Player creation
-    // createPlayers();
-    // console.log(`Player 1's name is ${player1.getName()} and their symbol is ${player1.getPiece()}`);
-    // console.log(`Player 2's name is ${player2.getName()} and their symbol is ${player2.getPiece()}`);
-  
-    // // gameBoard testing
-    // console.log(gameBoard.mode());
-    // gameBoard.activateGame();
-    // console.log(gameBoard.display());
-    // gameBoard.addPiece(0);
-    // gameBoard.addPiece(2);
-    // gameBoard.addPiece(1);
-    // console.log(gameBoard.display());
-    // console.log(gameBoard.mode());
-
-    // // checkForWinner testing
-    // console.log(`Check for winner: ${checkForWinner('X')}`);
+    toggleGameMode();
   }
 
   const turn = (element) => {
-    if (!gameBoard.mode()) console.log('Not allowed');
-    if (gameBoard.mode()) {
+    if (!gameMode) console.log('Not allowed');
+    if (gameMode) {
       let index = Number(element.dataset.position);
       console.log(element.dataset.position);
       element.innerHTML = currentPlayer.getPiece();
@@ -178,7 +158,7 @@ const game = (() => {
   }
 
   const endGame = () => {
-    if (!gameBoard.mode()) {
+    if (!gameMode) {
       console.log('Game is not running...');
       return;
     }
@@ -197,7 +177,7 @@ const game = (() => {
     console.log('This is a test');
   }
 
-  // Private
+  // Private methods
   const toggleCurrentPlayer = () => {
     if (currentPlayer === player1) {
       currentPlayer = player2;
@@ -205,6 +185,15 @@ const game = (() => {
       currentPlayer = player1;
     }
   }
+
+  const toggleGameMode = () => {
+    if (gameMode) {
+      gameMode = false;
+    } else {
+      gameMode = true;
+    }
+  }
+
   const checkForWinner = (symbol) => {
     let result = `Not a winner`;
     const winningArr = [
