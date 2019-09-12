@@ -44,12 +44,12 @@ const displayController = (() => {
   const gameListeners = () => {
     PLAY.addEventListener('click', game.playGame);
     END.addEventListener('click', game.endGame);
-    TEST.addEventListener('click', game.testGame);
+    END.addEventListener('click', () => game.resetBoard(GAMESPACES));
+    TEST.addEventListener('click', function() {
+      game.testGame(GAMESPACES);
+    });
 
     for (let i = 0; i < GAMESPACES.length; i++) {
-      // GAMESPACES[i].addEventListener('click', function() {
-      //   gameBoard.addPiece(i, 'O');
-      // });
       GAMESPACES[i].addEventListener('click', function() {
         console.log(GAMESPACES[i])
         game.turn(GAMESPACES[i]);
@@ -145,6 +145,8 @@ const game = (() => {
       return;
     }
 
+    resetGame();
+
     // Begin game
     createPlayers();
     toggleGameMode();
@@ -164,32 +166,27 @@ const game = (() => {
 
       element.innerHTML = currentPlayer.getPiece();
       gameBoard.addPiece(index, currentPlayer.getPiece());
-      toggleCurrentPlayer();
-      MSG.innerHTML = `It is ${currentPlayer.getName()}'s turn!`;
-      // toggleCurrentPlayer();
-    };
-    // Player selects a space
-    // IF gamespace is unavailable
-      // DISPLAY select new space
-    // ELSE
-      // addPiece to gamespace
-    // Check for winner
-    // IF winner
-      // DISPLAY congrats
-    // ELSE
-      // Oppo player's turn
-      // turnCount++
+      console.log(checkForWinner(currentPlayer.getPiece()));
 
+      if (checkForWinner(currentPlayer.getPiece())) {
+        gameMode = false;
+        MSG.innerHTML = `${currentPlayer.getName()} is the winner! Congrats!`;
+      } else {
+        toggleCurrentPlayer();
+        MSG.innerHTML = `It is ${currentPlayer.getName()}'s turn!`;
+      }
+    };
   }
 
   const resetGame = () => {
     gameBoard.resetBoard();
     gameMode = false;
+    isWinner = false;
     player1 = undefined;
     player2 = undefined;
     currentPlayer = undefined;
 
-    MSG.innerHTML = `--- Game resetting ---`;
+    MSG.innerHTML = `--- Click PLAY to begin a new game! ---`;
   }
 
   const endGame = () => {
@@ -197,19 +194,20 @@ const game = (() => {
       console.log('Game is not running...');
       return;
     }
-    // console.log(gameBoard.mode());
-    // console.log(gameBoard.display());
-    // gameBoard.resetGame();
-    // console.log(gameBoard.display());
-    // console.log(gameBoard.mode());
-
-    // isWinner = false;
-    // isGameMode = false;
-    gameBoard.resetBoard();
+    
+    resetGame();
   }
 
-  const testGame = () => {
-    console.log('This is a test');
+  const resetBoard = arr => {
+    arr.forEach(element => {
+      element.innerHTML = '';
+    })
+  }
+
+  const testGame = (arr) => {
+    arr.forEach(element => {
+      element.innerHTML = '';
+    });
   }
 
   // Private methods
@@ -230,7 +228,7 @@ const game = (() => {
   }
 
   const checkForWinner = (symbol) => {
-    let result = `Not a winner`;
+    let result = false;
     const winningArr = [
       [0, 1, 2],
       [3, 4, 5],
@@ -245,20 +243,17 @@ const game = (() => {
     
     winningArr.forEach(arr => {
       let count = 0;
-      console.log(arr);
       arr.forEach(index => {
         currentBoard.forEach((space, i) => {
           if (i === index) {
             if (space === symbol) {
-              console.log(space)
-              count = count + 1;
+              count++;
             }
           }
         });
       });
       if (count === 3) {
-        isWinner = true;
-        result = `Winner!`;
+        result = true;
       }
     });
 
@@ -277,6 +272,7 @@ const game = (() => {
     playGame,
     turn,
     endGame,
+    resetBoard,
     testGame
   }
 })();
