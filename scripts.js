@@ -35,7 +35,6 @@ const playerFactory = (name='name', piece='X') => {
 const displayController = (() => {
   const PLAY = document.querySelector('#play');
   const END = document.querySelector('#end');
-  const TEST = document.querySelector('#test');
   const GAMESPACES = document.querySelectorAll('.gamespace');
 
   const oneInput = () => document.querySelector('#player1');
@@ -44,10 +43,6 @@ const displayController = (() => {
   const gameListeners = () => {
     PLAY.addEventListener('click', game.playGame);
     END.addEventListener('click', game.endGame);
-    END.addEventListener('click', () => game.resetBoard(GAMESPACES));
-    TEST.addEventListener('click', function() {
-      game.testGame(GAMESPACES);
-    });
 
     for (let i = 0; i < GAMESPACES.length; i++) {
       GAMESPACES[i].addEventListener('click', function() {
@@ -70,6 +65,7 @@ const displayController = (() => {
 const gameBoard = (() => {
   // Variables
   const gameboard = ['', '', '', '', '', '', '', '', ''];
+  const GAMESPACES = document.querySelectorAll('.gamespace');
 
   // Methods
   const getGameboard = () => gameboard;
@@ -90,6 +86,9 @@ const gameBoard = (() => {
   const resetBoard = () => {
     for (let i = 0; i < gameboard.length; i++) {
       gameboard[i] = '';
+    }
+    for (let i = 0; i < GAMESPACES.length; i++) {
+      GAMESPACES[i].innerHTML = '';
     }
   }
 
@@ -112,8 +111,7 @@ const game = (() => {
 
   // Game variables
   let gameMode = false;
-  let gameCount = 1; // this will count up
-  let isWinner = false;
+  let gameCount = 0; // this will count up
 
   // Feedback
   const MSG = document.querySelector('#msg');
@@ -144,7 +142,6 @@ const game = (() => {
       MSG.innerHTML = `You're already playing! It is currently ${currentPlayer.getName()}'s turn`;
       return;
     }
-
     resetGame();
 
     // Begin game
@@ -157,23 +154,39 @@ const game = (() => {
     if (!gameMode) console.log('Not allowed');
     if (gameMode) {
       let index = Number(element.dataset.position);
-      console.log(element.dataset.position);
 
+      // Check if the space is available
       if (!gameBoard.checkAvailability(index)) {
         MSG.innerHTML = `Please select again, ${currentPlayer.getName()}...`;
         return;
       }
 
+      // Play the piece
       element.innerHTML = currentPlayer.getPiece();
       gameBoard.addPiece(index, currentPlayer.getPiece());
-      console.log(checkForWinner(currentPlayer.getPiece()));
+      gameCount++;
 
+      // Check for the winner
+      // If winner, end game, else continue
       if (checkForWinner(currentPlayer.getPiece())) {
         gameMode = false;
         MSG.innerHTML = `${currentPlayer.getName()} is the winner! Congrats!`;
+
+        displayController.oneInput().disabled = false;
+        displayController.twoInput().disabled = false;
       } else {
-        toggleCurrentPlayer();
-        MSG.innerHTML = `It is ${currentPlayer.getName()}'s turn!`;
+        // Check if game ends in a tie
+        if (checkGameCount()) {
+          gameMode = false;
+          MSG.innerHTML = `Game ends in a tie`;
+
+
+          displayController.oneInput().disabled = false;
+          displayController.twoInput().disabled = false;
+        } else {
+          toggleCurrentPlayer();
+          MSG.innerHTML = `It is ${currentPlayer.getName()}'s turn!`;
+        }
       }
     };
   }
@@ -181,12 +194,12 @@ const game = (() => {
   const resetGame = () => {
     gameBoard.resetBoard();
     gameMode = false;
-    isWinner = false;
+    gameCount = 0;
     player1 = undefined;
     player2 = undefined;
     currentPlayer = undefined;
 
-    MSG.innerHTML = `--- Click PLAY to begin a new game! ---`;
+    MSG.innerHTML = `Click PLAY to begin a new game!`;
   }
 
   const endGame = () => {
@@ -202,12 +215,6 @@ const game = (() => {
     arr.forEach(element => {
       element.innerHTML = '';
     })
-  }
-
-  const testGame = (arr) => {
-    arr.forEach(element => {
-      element.innerHTML = '';
-    });
   }
 
   // Private methods
@@ -260,42 +267,19 @@ const game = (() => {
     return result;
   }
 
-  const checkEndGame = () => {
+  const checkGameCount = () => {
     if (gameCount === 9) {
-      isGameMode = false;
-    } else if (isWinner === true) {
-      isGameMode = false;
+      return true;
     }
+    return false;
   }
 
   return {
     playGame,
     turn,
     endGame,
-    resetBoard,
-    testGame
+    resetBoard
   }
 })();
 
 displayController.gameListeners();
-
-
-/*
-
-Once the playGame button is pressed
---- isGameMode is set to true
---- players are created
---- a player's turn is selected at random
---- turn begins is set to true
-
-Turn begins
---- let whosTurn = 'X' (or player.symbol)
-      turn(whosTurn)
-        at the end of the turn, check for winner
-        if no winner and gameCount !== 9
-          if (whosTurn === 'X') whosTurn = 'O' elseif (whosTurn === 'O') whosTurn = 'X'
---- isPlayersTurn is set to true
---- turn takes in a player
---- GAMESPACE listener (if isPlayersTurn) {let player click the square} else {dont allow player to click square}
-
-*/
