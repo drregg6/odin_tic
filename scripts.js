@@ -209,6 +209,8 @@ const game = (() => {
     }
     
     resetGame();
+    displayController.oneInput().disabled = false;
+    displayController.twoInput().disabled = false;
   }
 
   const resetBoard = arr => {
